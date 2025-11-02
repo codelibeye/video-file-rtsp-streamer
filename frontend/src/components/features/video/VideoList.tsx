@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Table,
@@ -11,7 +11,9 @@ import {
   Typography,
   Chip,
   Button,
+  IconButton,
 } from '@mui/material';
+import { PlayArrow, StopCircle, ContentCopy } from '@mui/icons-material';
 
 type Video = {
   id: number;
@@ -27,7 +29,8 @@ type VideoListProps = {
 };
 
 const VideoList: React.FC<VideoListProps> = ({ refreshFlag }) => {
-  const [videos, setVideos] = React.useState<Video[]>([]);
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [copySuccess, setCopySuccess] = useState<number | null>(null);
 
   const url = 'http://localhost:8000/api';
   const fetchVideos = async () => {
@@ -111,6 +114,16 @@ const VideoList: React.FC<VideoListProps> = ({ refreshFlag }) => {
     }
   };
 
+  const handleCopy = async (videoId: number, streamUrl: string) => {
+    try {
+      await navigator.clipboard.writeText(streamUrl);
+      setCopySuccess(videoId);
+      setTimeout(() => setCopySuccess(null), 2000); // Reset after 2 seconds
+    } catch (error) {
+      console.error('Error copying RTSP URL:', error);
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -139,7 +152,11 @@ const VideoList: React.FC<VideoListProps> = ({ refreshFlag }) => {
               <TableCell sx={{ color: 'text.primary', fontWeight: 'bold' }}>No.</TableCell>
               <TableCell sx={{ color: 'text.primary', fontWeight: 'bold' }}>ID</TableCell>
               <TableCell sx={{ color: 'text.primary', fontWeight: 'bold' }}>Title</TableCell>
+              <TableCell sx={{ color: 'text.primary', fontWeight: 'bold' }}>Upload</TableCell>
               <TableCell sx={{ color: 'text.primary', fontWeight: 'bold' }}>Status</TableCell>
+              <TableCell sx={{ color: 'text.primary', fontWeight: 'bold', width: '200px' }}>
+                RTSP URL
+              </TableCell>
               <TableCell sx={{ color: 'text.primary', fontWeight: 'bold' }}>Time</TableCell>
               <TableCell sx={{ color: 'text.primary', fontWeight: 'bold' }}>Actions</TableCell>
             </TableRow>
@@ -159,6 +176,47 @@ const VideoList: React.FC<VideoListProps> = ({ refreshFlag }) => {
                 <TableCell sx={{ color: 'text.primary' }}>{video.title}</TableCell>
                 <TableCell>
                   <Chip label={video.status} color={getStatusColor(video.status)} />
+                </TableCell>
+                <TableCell>
+                  <Chip
+                    label={video.proc !== null ? 'RTSP Playing' : 'RTSP Stopped'}
+                    color={video.proc !== null ? 'success' : 'default'}
+                    size="small"
+                    icon={video.proc !== null ? <PlayArrow /> : <StopCircle />}
+                    sx={{ width: '140px' }}
+                  />
+                </TableCell>
+                <TableCell sx={{ width: '200px' }}>
+                  {video.proc !== null ? (
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontSize: '0.75rem',
+                          maxWidth: '200px',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        rtsp://localhost:8554/stream/{video.id}
+                      </Typography>
+                      <IconButton
+                        size="small"
+                        onClick={() =>
+                          handleCopy(video.id, `rtsp://localhost:8554/stream/${video.id}`)
+                        }
+                        sx={{
+                          color: copySuccess === video.id ? 'success.main' : 'text.primary',
+                        }}
+                      >
+                        <ContentCopy fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  ) : (
+                    <Typography variant="body2" color="text.disabled">
+                      ----
+                    </Typography>
+                  )}
                 </TableCell>
                 <TableCell sx={{ color: 'text.secondary' }}>{formatTime(video.time)}</TableCell>
                 <TableCell>
