@@ -2,6 +2,7 @@ from .schema import Base, Video, SessionLocal, engine
 from datetime import datetime
 import os
 from typing import List, Optional
+import psutil
 
 
 class VideoCRUD:
@@ -11,7 +12,32 @@ class VideoCRUD:
 
     def __init__(self):
         self.db = SessionLocal()
+        self.cleanup_orphaned_processes()
     
+    def cleanup_orphaned_processes(self) -> None:
+        try:
+            videos_with_proc = self.db.query(Video).filter(
+                Video.proc.isnot(None),
+                Video.is_deleted == False
+            ).all()
+
+            for video in videos_with_proc:
+                proc_id = video.proc
+                if not psutil.pid_exists(proc_id):
+                    print(f"Cleaning up orphaned process ID {proc_id} for video ID {video.id}")
+                    video.proc = None
+                else:
+                    process = psutil.Process(proc_id)
+                    process_name = process.name().lower()
+                    if "ffmpeg" not in process_name:
+                        print(f"Process ID {proc_id} for video ID {video.id} is not ffmpeg. Cleaning up.")
+                        video.proc = None
+            self.db.commit()
+            print("Orphaned process cleanup completed.")
+        except Exception as e:
+            print(f"Error during orphaned process cleanup: {e}")
+            self.db.rollback()
+
     def create(self, title: str, file_path: str, status: str = "completed") -> Video:
         new_video = Video(
             title=title,
