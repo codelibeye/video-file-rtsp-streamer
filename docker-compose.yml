@@ -7,9 +7,11 @@ services:
       - "8000:8000"
     volumes:
      - ./backend/uploads:/app/uploads
+     - ./backend/data:/app/data
     environment:
       - PYTHONPATH=/app
       - RTSP_SERVER_HOST=rtsp-server
+      - DATABASE_PATH=sqlite:///./data/videos.db
     depends_on:
       - rtsp-server
     networks:

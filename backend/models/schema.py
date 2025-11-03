@@ -1,9 +1,11 @@
+import os
+
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, Boolean, func
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-DATABASE_URL = "sqlite:///./test.db"
+DATABASE_PATH = os.getenv("DATABASE_PATH", "sqlite:///./data/videos.db")
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_PATH)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
