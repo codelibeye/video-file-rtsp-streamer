@@ -27,6 +27,23 @@ A web-based application for managing video files and streaming them via RTSP pro
 * Docker & Docker Compose **(recommended)**
 * Manually: Node.js + npm, Python 3.8+, FFmpeg and Docker (For RTSP server)
 
+## Screenshots
+### Home
+![Home](./imgs/home.jpg)
+*Video management top page*
+
+### Upload MP4 File
+![upload](./imgs/upload.jpg)
+*Drag & drop file upload*
+
+### Start Stream 
+![start stream](./imgs/start.jpg)
+*One-click RTSP stream activation*
+
+### Play Stream
+![play stream](./imgs/play.jpg)
+*RTSP streaming play with media player*
+
 ## Quick Start
 ### Option 1: Docker Compose
 ```bash
