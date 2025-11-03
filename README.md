@@ -102,10 +102,10 @@ This project is licensed under the MIT License.
   - SQLite data persistence across container restarts
   - Prevent data loss on container recreation
 
-- [ ] **Enhanced stream status management**
-  - Check streaming status using database flags
-  - Display real-time stream status in video list
-  - Show RTSP URI for active streams in table
+- [x] **Enhanced stream status management**
+  - ✅ Check streaming status using database flags
+  - ✅ Display real-time stream status in video list
+  - ✅ Show RTSP URI for active streams in table
 
 ### Medium Priority  
 - [ ] **Stream monitoring**
