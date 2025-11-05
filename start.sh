@@ -1,72 +1,43 @@
 #!/bin/bash
 
-# Railway Deployment Script for Video File RTSP Streamer
-# This script deploys the application to Railway using Railway CLI
+# Color output
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
-set -e
-
-echo "🚀 Starting deployment to Railway..."
+echo -e "${BLUE}🚀 Railway Multi-Service Deployment${NC}"
+echo ""
 
 # Check if Railway CLI is installed
 if ! command -v railway &> /dev/null; then
-    echo "❌ Railway CLI not found. Installing..."
-    
-    # Install Railway CLI using npm
-    npm install -g @railway/cli
-    
-    # Verify installation
-    if ! command -v railway &> /dev/null; then
-        echo "❌ Failed to install Railway CLI"
-        exit 1
-    fi
+    echo -e "${BLUE}📦 Installing Railway CLI...${NC}"
+    curl -fsSL https://railway.com/install.sh | sh
 fi
 
-# Check if user is logged in to Railway
-if ! railway whoami &> /dev/null; then
-    echo "🔐 Please login to Railway first:"
-    echo "   railway login"
-    exit 1
+# Initialize Railway project (if needed)
+if [ ! -f "railway.toml" ] && [ ! -f "railway.json" ]; then
+    echo -e "${BLUE}🔧 Initializing Railway project...${NC}"
+    railway init
 fi
 
-echo "✅ Railway CLI is ready"
+# Login to Railway
+echo -e "${BLUE}🔐 Logging in to Railway...${NC}"
+railway login --browserless
 
-# Get project name (optional)
-PROJECT_NAME=${1:-"video-rtsp-streamer"}
+# Deploy Backend
+echo -e "${GREEN}📤 Deploying Backend...${NC}"
+cd backend
+railway service
+railway up
+cd ..
 
-echo "📦 Deploying project: $PROJECT_NAME"
+echo ""
 
-# Check if we're in a git repository
-if [ ! -d ".git" ]; then
-    echo "❌ Not a git repository. Please run this script from a git repository."
-    exit 1
-fi
+# Deploy Frontend
+echo -e "${GREEN}📤 Deploying Frontend...${NC}"
+cd frontend
+railway service
+railway up
+cd ..
 
-# Get current branch
-BRANCH=$(git branch --show-current)
-echo "🌿 Current branch: $BRANCH"
-
-# Deploy to Railway
-echo "🚀 Deploying to Railway..."
-
-# Create a new service or update existing one
-railway up \
-    --service "$PROJECT_NAME" \
-    --branch "$BRANCH"
-
-# Get the service URL
-SERVICE_URL=$(railway domain --service "$PROJECT_NAME" 2>/dev/null || echo "")
-
-if [ -n "$SERVICE_URL" ]; then
-    echo "✅ Deployment successful!"
-    echo "🌐 Your application is available at: $SERVICE_URL"
-    echo ""
-    echo "📋 Useful commands:"
-    echo "   railway logs --service $PROJECT_NAME     # View logs"
-    echo "   railway variables --service $PROJECT_NAME  # Manage environment variables"
-    echo "   railway status --service $PROJECT_NAME   # Check service status"
-else
-    echo "⚠️  Deployment completed, but couldn't retrieve service URL"
-    echo "   You can check your service at: https://railway.app"
-fi
-
-echo "🎉 Deployment process completed!"
+echo -e "${GREEN}✅ Deployment Complete!${NC}"
