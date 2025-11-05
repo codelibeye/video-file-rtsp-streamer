@@ -1,10 +1,11 @@
-FROM node:20-alpine
+FROM node:24-alpine
 
 WORKDIR /app
 COPY package.json /app/
 COPY ./src /app/src/
 COPY tsconfig.json /app/
 COPY ./public /app/public/
-RUN npm install
+RUN yarn install --legacy-peer-deps
+RUN yarn build
 
-CMD ["npm", "start"]
+CMD ["yarn", "start"]

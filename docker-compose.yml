@@ -6,8 +6,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-     - ./backend/uploads:/app/uploads
-     - ./backend/data:/app/data
+     - video_uploads:/app/uploads
+     - video_data:/app/data
     environment:
       - PYTHONPATH=/app
       - RTSP_SERVER_HOST=rtsp-server
@@ -16,6 +16,7 @@ services:
       - rtsp-server
     networks:
       - app-network
+    restart: unless-stopped
   frontend:
     build: ./frontend
     ports:
@@ -24,6 +25,7 @@ services:
       - backend
     networks:
       - app-network
+    restart: unless-stopped
   rtsp-server:
     image: bluenviron/mediamtx
     ports:
@@ -35,9 +37,24 @@ services:
       - "8189:8189/udp"
     environment:
       - MTX_RTSPTRANSPORTS=tcp
-      - MTX_WEBRTCADDITIONALHOSTS=192.168.x.x
+      - MTX_WEBRTCADDITIONALHOSTS=192.168.1.10
     networks:
       - app-network
+    restart: unless-stopped
+    volumes:
+      - rtsp_config:/config
+      - rtsp_data:/data
+
+volumes:
+  video_uploads:
+    driver: local
+  video_data:
+    driver: local
+  rtsp_config:
+    driver: local
+  rtsp_data:
+    driver: local
+
 networks:
   app-network:
     driver: bridge

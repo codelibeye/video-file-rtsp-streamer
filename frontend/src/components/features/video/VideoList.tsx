@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Table,
@@ -12,13 +12,18 @@ import {
   Chip,
   Button,
   IconButton,
-} from '@mui/material';
-import { PlayArrow, StopCircle, ContentCopy } from '@mui/icons-material';
+} from "@mui/material";
+import {
+  PlayArrow,
+  StopCircle,
+  ContentCopy,
+  Visibility,
+} from "@mui/icons-material";
 
 type Video = {
   id: number;
   title: string;
-  status: 'uploading' | 'completed' | 'error';
+  status: "uploading" | "completed" | "error";
   time: string;
   proc: number | null; // For display "Start RTSP" or "Stop RTSP"
   file_path?: string; // Just for backend compatibility
@@ -32,7 +37,7 @@ const VideoList: React.FC<VideoListProps> = ({ refreshFlag }) => {
   const [videos, setVideos] = useState<Video[]>([]);
   const [copySuccess, setCopySuccess] = useState<number | null>(null);
 
-  const url = 'http://localhost:8000/api';
+  const url = "http://localhost:8000/api";
   const fetchVideos = async () => {
     const fetchUrl = `${url}/videos/list`;
     try {
@@ -42,19 +47,19 @@ const VideoList: React.FC<VideoListProps> = ({ refreshFlag }) => {
         setVideos(data);
       }
     } catch (error) {
-      console.error('Error fetching videos:', error);
+      console.error("Error fetching videos:", error);
     }
   };
 
   const deleteVideo = async (id: number) => {
     const deleteUrl = `${url}/videos/${id}`;
     try {
-      const response = await fetch(deleteUrl, { method: 'DELETE' });
+      const response = await fetch(deleteUrl, { method: "DELETE" });
       if (response.ok) {
         setVideos(videos.filter((video) => video.id !== id));
       }
     } catch (error) {
-      console.error('Error deleting video:', error);
+      console.error("Error deleting video:", error);
     }
   };
 
@@ -62,16 +67,16 @@ const VideoList: React.FC<VideoListProps> = ({ refreshFlag }) => {
     fetchVideos();
   }, [refreshFlag]);
 
-  const getStatusColor = (status: Video['status']) => {
+  const getStatusColor = (status: Video["status"]) => {
     switch (status) {
-      case 'completed':
-        return 'success';
-      case 'uploading':
-        return 'primary';
-      case 'error':
-        return 'error';
+      case "completed":
+        return "success";
+      case "uploading":
+        return "primary";
+      case "error":
+        return "error";
       default:
-        return 'default';
+        return "default";
     }
   };
 
@@ -89,13 +94,13 @@ const VideoList: React.FC<VideoListProps> = ({ refreshFlag }) => {
     // Implement RTSP play logic here
     const rtspUrl = `${url}/stream/${id}/start`;
     try {
-      const response = await fetch(rtspUrl, { method: 'GET' });
+      const response = await fetch(rtspUrl, { method: "GET" });
       if (response.ok) {
         console.log(`RTSP stream started for video id: ${id}`);
         fetchVideos(); // Refresh the list to update proc status
       }
     } catch (error) {
-      console.error('Error starting RTSP stream:', error);
+      console.error("Error starting RTSP stream:", error);
     }
   };
 
@@ -104,13 +109,13 @@ const VideoList: React.FC<VideoListProps> = ({ refreshFlag }) => {
     // Implement RTSP stop logic here
     const rtspUrl = `${url}/stream/${id}/stop`;
     try {
-      const response = await fetch(rtspUrl, { method: 'GET' });
+      const response = await fetch(rtspUrl, { method: "GET" });
       if (response.ok) {
         console.log(`RTSP stream stopped for video id: ${id}`);
         fetchVideos(); // Refresh the list to update proc status
       }
     } catch (error) {
-      console.error('Error stopping RTSP stream:', error);
+      console.error("Error stopping RTSP stream:", error);
     }
   };
 
@@ -120,7 +125,7 @@ const VideoList: React.FC<VideoListProps> = ({ refreshFlag }) => {
       setCopySuccess(videoId);
       setTimeout(() => setCopySuccess(null), 2000); // Reset after 2 seconds
     } catch (error) {
-      console.error('Error copying RTSP URL:', error);
+      console.error("Error copying RTSP URL:", error);
     }
   };
 
@@ -129,10 +134,10 @@ const VideoList: React.FC<VideoListProps> = ({ refreshFlag }) => {
       sx={{
         p: 3,
         mb: 2,
-        border: '1px solid',
-        borderColor: 'secondary.light',
+        border: "1px solid",
+        borderColor: "secondary.light",
         borderRadius: 2,
-        bgcolor: 'background.paper',
+        bgcolor: "background.paper",
       }}
     >
       <Typography variant="h4" gutterBottom color="primary.main">
@@ -141,24 +146,44 @@ const VideoList: React.FC<VideoListProps> = ({ refreshFlag }) => {
       <TableContainer
         component={Paper}
         sx={{
-          border: '1px solid',
-          bgcolor: 'background.paper',
-          borderColor: 'secondary.light',
+          border: "1px solid",
+          bgcolor: "background.paper",
+          borderColor: "secondary.light",
         }}
       >
         <Table>
           <TableHead>
-            <TableRow sx={{ bgcolor: 'background.default' }}>
-              <TableCell sx={{ color: 'text.primary', fontWeight: 'bold' }}>No.</TableCell>
-              <TableCell sx={{ color: 'text.primary', fontWeight: 'bold' }}>ID</TableCell>
-              <TableCell sx={{ color: 'text.primary', fontWeight: 'bold' }}>Title</TableCell>
-              <TableCell sx={{ color: 'text.primary', fontWeight: 'bold' }}>Upload</TableCell>
-              <TableCell sx={{ color: 'text.primary', fontWeight: 'bold' }}>Status</TableCell>
-              <TableCell sx={{ color: 'text.primary', fontWeight: 'bold', width: '200px' }}>
+            <TableRow sx={{ bgcolor: "background.default" }}>
+              <TableCell sx={{ color: "text.primary", fontWeight: "bold" }}>
+                No.
+              </TableCell>
+              <TableCell sx={{ color: "text.primary", fontWeight: "bold" }}>
+                ID
+              </TableCell>
+              <TableCell sx={{ color: "text.primary", fontWeight: "bold" }}>
+                Title
+              </TableCell>
+              <TableCell sx={{ color: "text.primary", fontWeight: "bold" }}>
+                Upload
+              </TableCell>
+              <TableCell sx={{ color: "text.primary", fontWeight: "bold" }}>
+                Status
+              </TableCell>
+              <TableCell
+                sx={{
+                  color: "text.primary",
+                  fontWeight: "bold",
+                  width: "200px",
+                }}
+              >
                 RTSP URL
               </TableCell>
-              <TableCell sx={{ color: 'text.primary', fontWeight: 'bold' }}>Time</TableCell>
-              <TableCell sx={{ color: 'text.primary', fontWeight: 'bold' }}>Actions</TableCell>
+              <TableCell sx={{ color: "text.primary", fontWeight: "bold" }}>
+                Time
+              </TableCell>
+              <TableCell sx={{ color: "text.primary", fontWeight: "bold" }}>
+                Actions
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -166,36 +191,45 @@ const VideoList: React.FC<VideoListProps> = ({ refreshFlag }) => {
               <TableRow
                 key={index}
                 sx={{
-                  '&:hover': {
-                    bgcolor: 'action.hover',
+                  "&:hover": {
+                    bgcolor: "action.hover",
                   },
                 }}
               >
-                <TableCell sx={{ color: 'text.primary' }}>{index + 1}</TableCell>
-                <TableCell sx={{ color: 'text.primary' }}>{video.id}</TableCell>
-                <TableCell sx={{ color: 'text.primary' }}>{video.title}</TableCell>
-                <TableCell>
-                  <Chip label={video.status} color={getStatusColor(video.status)} />
+                <TableCell sx={{ color: "text.primary" }}>
+                  {index + 1}
+                </TableCell>
+                <TableCell sx={{ color: "text.primary" }}>{video.id}</TableCell>
+                <TableCell sx={{ color: "text.primary" }}>
+                  {video.title}
                 </TableCell>
                 <TableCell>
                   <Chip
-                    label={video.proc !== null ? 'RTSP Playing' : 'RTSP Stopped'}
-                    color={video.proc !== null ? 'success' : 'default'}
-                    size="small"
-                    icon={video.proc !== null ? <PlayArrow /> : <StopCircle />}
-                    sx={{ width: '140px' }}
+                    label={video.status}
+                    color={getStatusColor(video.status)}
                   />
                 </TableCell>
-                <TableCell sx={{ width: '200px' }}>
+                <TableCell>
+                  <Chip
+                    label={
+                      video.proc !== null ? "RTSP Playing" : "RTSP Stopped"
+                    }
+                    color={video.proc !== null ? "success" : "default"}
+                    size="small"
+                    icon={video.proc !== null ? <PlayArrow /> : <StopCircle />}
+                    sx={{ width: "140px" }}
+                  />
+                </TableCell>
+                <TableCell sx={{ width: "200px" }}>
                   {video.proc !== null ? (
                     <Box display="flex" alignItems="center" gap={1}>
                       <Typography
                         variant="body2"
                         sx={{
-                          fontSize: '0.75rem',
-                          maxWidth: '200px',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
+                          fontSize: "0.75rem",
+                          maxWidth: "200px",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
                         }}
                       >
                         rtsp://localhost:8554/stream/{video.id}
@@ -203,10 +237,16 @@ const VideoList: React.FC<VideoListProps> = ({ refreshFlag }) => {
                       <IconButton
                         size="small"
                         onClick={() =>
-                          handleCopy(video.id, `rtsp://localhost:8554/stream/${video.id}`)
+                          handleCopy(
+                            video.id,
+                            `rtsp://localhost:8554/stream/${video.id}`
+                          )
                         }
                         sx={{
-                          color: copySuccess === video.id ? 'success.main' : 'text.primary',
+                          color:
+                            copySuccess === video.id
+                              ? "success.main"
+                              : "text.primary",
                         }}
                       >
                         <ContentCopy fontSize="small" />
@@ -218,7 +258,9 @@ const VideoList: React.FC<VideoListProps> = ({ refreshFlag }) => {
                     </Typography>
                   )}
                 </TableCell>
-                <TableCell sx={{ color: 'text.secondary' }}>{formatTime(video.time)}</TableCell>
+                <TableCell sx={{ color: "text.secondary" }}>
+                  {formatTime(video.time)}
+                </TableCell>
                 <TableCell>
                   {video.proc ? (
                     <Button
@@ -226,13 +268,13 @@ const VideoList: React.FC<VideoListProps> = ({ refreshFlag }) => {
                       size="small"
                       sx={{
                         mr: 1,
-                        bgcolor: 'secondary.main',
-                        '&:hover': {
-                          bgcolor: 'secondary.dark',
+                        bgcolor: "secondary.main",
+                        "&:hover": {
+                          bgcolor: "secondary.dark",
                         },
                       }}
                       onClick={() => handleStop(video.id)}
-                      disabled={video.status !== 'completed'}
+                      disabled={video.status !== "completed"}
                     >
                       Stop RTSP
                     </Button>
@@ -242,13 +284,13 @@ const VideoList: React.FC<VideoListProps> = ({ refreshFlag }) => {
                       size="small"
                       sx={{
                         mr: 1,
-                        bgcolor: 'primary.main',
-                        '&:hover': {
-                          bgcolor: 'primary.dark',
+                        bgcolor: "primary.main",
+                        "&:hover": {
+                          bgcolor: "primary.dark",
                         },
                       }}
                       onClick={() => handlePlay(video.id)}
-                      disabled={video.status !== 'completed'}
+                      disabled={video.status !== "completed"}
                     >
                       Play RTSP
                     </Button>
@@ -259,15 +301,15 @@ const VideoList: React.FC<VideoListProps> = ({ refreshFlag }) => {
                     size="small"
                     color="error"
                     sx={{
-                      borderColor: 'error.main',
-                      color: 'error.main',
-                      '&:hover': {
-                        bgcolor: 'error.light',
-                        borderColor: 'error.dark',
+                      borderColor: "error.main",
+                      color: "error.main",
+                      "&:hover": {
+                        bgcolor: "error.light",
+                        borderColor: "error.dark",
                       },
                     }}
                     onClick={() => handleDelete(video.id)}
-                    disabled={video.status === 'uploading'}
+                    disabled={video.status === "uploading"}
                   >
                     Delete
                   </Button>

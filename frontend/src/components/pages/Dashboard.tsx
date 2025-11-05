@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { Box, Fab, Dialog, SxProps, Theme } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import FileUpload from '../features/upload/FileUpload';
-import VideoList from '../features/video/VideoList';
+import React, { useState } from "react";
+import { Box, Fab, Dialog, SxProps, Theme } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import FileUpload from "../features/upload/FileUpload";
+import VideoList from "../features/video/VideoList";
+import StreamHealth from "../features/stream/StreamHealth";
 
 type DashboardProps = {
   sx?: SxProps<Theme>;
@@ -21,19 +22,20 @@ const Dashboard: React.FC<DashboardProps> = ({ sx }) => {
       }}
     >
       {/* <h1>Dashboard Component</h1> */}
+      <StreamHealth />
       <VideoList refreshFlag={refreshFlag} />
       <Fab
         color="primary"
         aria-label="add"
         sx={{
-          position: 'fixed',
+          position: "fixed",
           bottom: 30,
           right: 30,
-          bgcolor: 'primary.main',
-          '&:hover': {
-            bgcolor: 'primary.dark',
+          bgcolor: "primary.main",
+          "&:hover": {
+            bgcolor: "primary.dark",
           },
-          color: 'background.paper',
+          color: "background.paper",
         }}
         onClick={() => setOpenUploadDialog(true)}
       >
@@ -50,9 +52,9 @@ const Dashboard: React.FC<DashboardProps> = ({ sx }) => {
         slotProps={{
           paper: {
             sx: {
-              bgcolor: 'background.paper',
-              border: '1px solid',
-              borderColor: 'secondary.light',
+              bgcolor: "background.paper",
+              border: "1px solid",
+              borderColor: "secondary.light",
             },
           },
         }}

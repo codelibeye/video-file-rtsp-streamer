@@ -5,3 +5,10 @@ __pycache__
 README.md
 .env
 .venv
+.vscode
+.pytest_cache
+.coverage
+htmlcov
+.DS_Store
+logs/
+*.log
